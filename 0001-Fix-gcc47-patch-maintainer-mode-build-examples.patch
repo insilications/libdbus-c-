@@ -1,0 +1,753 @@
+From 810e3e902a35594fc3bfd5ef5afa59e95ae6c179 Mon Sep 17 00:00:00 2001
+From: Francisco Boni <boboniboni@gmail.com>
+Date: Sun, 19 Apr 2020 03:27:53 -0300
+Subject: [PATCH 1/4] Fix gcc47 patch - maintainer mode - build examples
+
+---
+ configure.ac                      | 4 ++--
+ examples/echo/Makefile.in         | 6 +++---
+ examples/echo_ecore/Makefile.in   | 6 +++---
+ examples/ecore/Makefile.in        | 4 ++--
+ examples/glib/Makefile.in         | 4 ++--
+ examples/glib/dbus-browser.h      | 3 ++-
+ examples/hal/Makefile.in          | 4 ++--
+ examples/properties/Makefile.in   | 4 ++--
+ src/Makefile.in                   | 6 +++---
+ src/eventloop-integration.cpp     | 1 +
+ src/integration/ecore/Makefile.in | 4 ++--
+ src/integration/glib/Makefile.in  | 4 ++--
+ test/functional/Test1/Makefile.in | 6 +++---
+ test/generator/Makefile.in        | 8 ++++----
+ tools/Makefile.in                 | 4 ++--
+ 15 files changed, 35 insertions(+), 33 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index f487786..13d9199 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -10,7 +10,7 @@ AC_CONFIG_MACRO_DIR([m4])
+ AC_CANONICAL_HOST
+ 
+ AC_SUBST(PACKAGE_VERSION)
+-
++AM_MAINTAINER_MODE([disable])
+ 
+ # Set configuration options
+ 
+@@ -159,7 +159,7 @@ if ! $have_expat; then
+ fi
+ 
+ xml_CFLAGS=
+-xml_LIBS=-lexpat
++xml_LIBS=-lpthread -lexpat
+ 
+ AC_SUBST(xml_CFLAGS)
+ AC_SUBST(xml_LIBS)
+diff --git a/examples/echo/Makefile.in b/examples/echo/Makefile.in
+index 9eaeb00..46142eb 100644
+--- a/examples/echo/Makefile.in
++++ b/examples/echo/Makefile.in
+@@ -57,7 +57,7 @@ echo_client_mt_DEPENDENCIES = $(top_builddir)/src/libdbus-c++-1.la \
+ echo_client_mt_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+ 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) \
+ 	$(echo_client_mt_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
+-	$(LDFLAGS) -o $@
++	$(LDFLAGS) -lpthread -lexpat -o $@
+ am_echo_server_OBJECTS = echo-server.$(OBJEXT)
+ echo_server_OBJECTS = $(am_echo_server_OBJECTS)
+ echo_server_DEPENDENCIES = $(top_builddir)/src/libdbus-c++-1.la
+@@ -73,7 +73,7 @@ LTCXXCOMPILE = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+ CXXLD = $(CXX)
+ CXXLINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+ 	--mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
+-	$(LDFLAGS) -o $@
++	$(LDFLAGS) -lpthread -lexpat -o $@
+ COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
+ 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+ LTCOMPILE = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+@@ -82,7 +82,7 @@ LTCOMPILE = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+ CCLD = $(CC)
+ LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+ 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
+-	$(LDFLAGS) -o $@
++	$(LDFLAGS) -lpthread -lexpat -o $@
+ SOURCES = $(echo_client_mt_SOURCES) $(echo_server_SOURCES)
+ DIST_SOURCES = $(echo_client_mt_SOURCES) $(echo_server_SOURCES)
+ ETAGS = etags
+diff --git a/examples/echo_ecore/Makefile.in b/examples/echo_ecore/Makefile.in
+index 13a1dee..dc9f0f3 100644
+--- a/examples/echo_ecore/Makefile.in
++++ b/examples/echo_ecore/Makefile.in
+@@ -60,7 +60,7 @@ echo_client_mt_DEPENDENCIES =  \
+ echo_client_mt_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+ 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) \
+ 	$(echo_client_mt_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
+-	$(LDFLAGS) -o $@
++	$(LDFLAGS) -lpthread -lexpat -o $@
+ am_echo_server_OBJECTS = echo-server.$(OBJEXT)
+ echo_server_OBJECTS = $(am_echo_server_OBJECTS)
+ echo_server_DEPENDENCIES =  \
+@@ -78,7 +78,7 @@ LTCXXCOMPILE = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+ CXXLD = $(CXX)
+ CXXLINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+ 	--mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
+-	$(LDFLAGS) -o $@
++	$(LDFLAGS) -lpthread -lexpat -o $@
+ COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
+ 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+ LTCOMPILE = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+@@ -87,7 +87,7 @@ LTCOMPILE = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+ CCLD = $(CC)
+ LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+ 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
+-	$(LDFLAGS) -o $@
++	$(LDFLAGS) -lpthread -lexpat -o $@
+ SOURCES = $(echo_client_mt_SOURCES) $(echo_server_SOURCES)
+ DIST_SOURCES = $(echo_client_mt_SOURCES) $(echo_server_SOURCES)
+ ETAGS = etags
+diff --git a/examples/ecore/Makefile.in b/examples/ecore/Makefile.in
+index 79bfbe1..eb768ad 100644
+--- a/examples/ecore/Makefile.in
++++ b/examples/ecore/Makefile.in
+@@ -68,7 +68,7 @@ LTCXXCOMPILE = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+ CXXLD = $(CXX)
+ CXXLINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+ 	--mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
+-	$(LDFLAGS) -o $@
++	$(LDFLAGS) -lpthread -lexpat -o $@
+ COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
+ 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+ LTCOMPILE = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+@@ -77,7 +77,7 @@ LTCOMPILE = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+ CCLD = $(CC)
+ LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+ 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
+-	$(LDFLAGS) -o $@
++	$(LDFLAGS) -lpthread -lexpat -o $@
+ SOURCES = $(dbus_ecore_SOURCES)
+ DIST_SOURCES = $(dbus_ecore_SOURCES)
+ ETAGS = etags
+diff --git a/examples/glib/Makefile.in b/examples/glib/Makefile.in
+index 0ce4609..6499dcb 100644
+--- a/examples/glib/Makefile.in
++++ b/examples/glib/Makefile.in
+@@ -67,7 +67,7 @@ LTCXXCOMPILE = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+ CXXLD = $(CXX)
+ CXXLINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+ 	--mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
+-	$(LDFLAGS) -o $@
++	$(LDFLAGS) -lpthread -lexpat -o $@
+ COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
+ 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+ LTCOMPILE = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+@@ -76,7 +76,7 @@ LTCOMPILE = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+ CCLD = $(CC)
+ LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+ 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
+-	$(LDFLAGS) -o $@
++	$(LDFLAGS) -lpthread -lexpat -o $@
+ SOURCES = $(dbus_browser_SOURCES)
+ DIST_SOURCES = $(dbus_browser_SOURCES)
+ ETAGS = etags
+diff --git a/examples/glib/dbus-browser.h b/examples/glib/dbus-browser.h
+index 4a434a2..f28d9d1 100644
+--- a/examples/glib/dbus-browser.h
++++ b/examples/glib/dbus-browser.h
+@@ -1,9 +1,10 @@
+ #ifndef __DEMO_DBUS_BROWSER_H
+ #define __DEMO_DBUS_BROWSER_H
+ 
++#include <gtkmm.h>
+ #include <dbus-c++/dbus.h>
+ #include <dbus-c++/glib-integration.h>
+-#include <gtkmm.h>
++
+ 
+ #include "dbus-glue.h"
+ 
+diff --git a/examples/hal/Makefile.in b/examples/hal/Makefile.in
+index 08df17d..9e97f5b 100644
+--- a/examples/hal/Makefile.in
++++ b/examples/hal/Makefile.in
+@@ -64,7 +64,7 @@ LTCXXCOMPILE = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+ CXXLD = $(CXX)
+ CXXLINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+ 	--mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
+-	$(LDFLAGS) -o $@
++	$(LDFLAGS) -lpthread -lexpat -o $@
+ COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
+ 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+ LTCOMPILE = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+@@ -73,7 +73,7 @@ LTCOMPILE = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+ CCLD = $(CC)
+ LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+ 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
+-	$(LDFLAGS) -o $@
++	$(LDFLAGS) -lpthread -lexpat -o $@
+ SOURCES = $(hal_listen_SOURCES)
+ DIST_SOURCES = $(hal_listen_SOURCES)
+ ETAGS = etags
+diff --git a/examples/properties/Makefile.in b/examples/properties/Makefile.in
+index efff97a..30d477b 100644
+--- a/examples/properties/Makefile.in
++++ b/examples/properties/Makefile.in
+@@ -67,7 +67,7 @@ LTCXXCOMPILE = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+ CXXLD = $(CXX)
+ CXXLINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+ 	--mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
+-	$(LDFLAGS) -o $@
++	$(LDFLAGS) -lpthread -lexpat -o $@
+ COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
+ 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+ LTCOMPILE = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+@@ -76,7 +76,7 @@ LTCOMPILE = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+ CCLD = $(CC)
+ LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+ 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
+-	$(LDFLAGS) -o $@
++	$(LDFLAGS) -lpthread -lexpat -o $@
+ SOURCES = $(propsgs_client_SOURCES) $(propsgs_server_SOURCES)
+ DIST_SOURCES = $(propsgs_client_SOURCES) $(propsgs_server_SOURCES)
+ ETAGS = etags
+diff --git a/src/Makefile.in b/src/Makefile.in
+index e075e8d..130f4d5 100644
+--- a/src/Makefile.in
++++ b/src/Makefile.in
+@@ -88,7 +88,7 @@ libdbus_c___1_la_OBJECTS = $(am_libdbus_c___1_la_OBJECTS)
+ libdbus_c___1_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+ 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) \
+ 	$(libdbus_c___1_la_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
+-	$(LDFLAGS) -o $@
++	$(LDFLAGS) -lpthread -lexpat -o $@
+ DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
+ depcomp = $(SHELL) $(top_srcdir)/depcomp
+ am__depfiles_maybe = depfiles
+@@ -101,7 +101,7 @@ LTCXXCOMPILE = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+ CXXLD = $(CXX)
+ CXXLINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+ 	--mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
+-	$(LDFLAGS) -o $@
++	$(LDFLAGS) -lpthread -lexpat -o $@
+ COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
+ 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+ LTCOMPILE = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+@@ -110,7 +110,7 @@ LTCOMPILE = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+ CCLD = $(CC)
+ LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+ 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
+-	$(LDFLAGS) -o $@
++	$(LDFLAGS) -lpthread -lexpat -o $@
+ SOURCES = $(libdbus_c___1_la_SOURCES)
+ DIST_SOURCES = $(libdbus_c___1_la_SOURCES)
+ RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
+diff --git a/src/eventloop-integration.cpp b/src/eventloop-integration.cpp
+index 0cc65c3..5776971 100644
+--- a/src/eventloop-integration.cpp
++++ b/src/eventloop-integration.cpp
+@@ -38,6 +38,7 @@
+ #include <cassert>
+ #include <sys/poll.h>
+ #include <fcntl.h>
++#include <unistd.h>
+ 
+ using namespace DBus;
+ using namespace std;
+diff --git a/src/integration/ecore/Makefile.in b/src/integration/ecore/Makefile.in
+index 8fd4a2b..ebc0472 100644
+--- a/src/integration/ecore/Makefile.in
++++ b/src/integration/ecore/Makefile.in
+@@ -82,7 +82,7 @@ libdbus_c___ecore_1_la_OBJECTS = $(am_libdbus_c___ecore_1_la_OBJECTS)
+ libdbus_c___ecore_1_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+ 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) \
+ 	$(libdbus_c___ecore_1_la_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
+-	$(LDFLAGS) -o $@
++	$(LDFLAGS) -lpthread -lexpat -o $@
+ @ENABLE_ECORE_TRUE@am_libdbus_c___ecore_1_la_rpath = -rpath $(libdir)
+ DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
+ depcomp = $(SHELL) $(top_srcdir)/depcomp
+@@ -96,7 +96,7 @@ LTCXXCOMPILE = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+ CXXLD = $(CXX)
+ CXXLINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+ 	--mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
+-	$(LDFLAGS) -o $@
++	$(LDFLAGS) -lpthread -lexpat -o $@
+ SOURCES = $(libdbus_c___ecore_1_la_SOURCES)
+ DIST_SOURCES = $(am__libdbus_c___ecore_1_la_SOURCES_DIST)
+ am__libdbus_c___ecore_1_HEADERS_DIST =  \
+diff --git a/src/integration/glib/Makefile.in b/src/integration/glib/Makefile.in
+index c3c0594..813bd3f 100644
+--- a/src/integration/glib/Makefile.in
++++ b/src/integration/glib/Makefile.in
+@@ -83,7 +83,7 @@ libdbus_c___glib_1_la_OBJECTS = $(am_libdbus_c___glib_1_la_OBJECTS)
+ libdbus_c___glib_1_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+ 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) \
+ 	$(libdbus_c___glib_1_la_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
+-	$(LDFLAGS) -o $@
++	$(LDFLAGS) -lpthread -lexpat -o $@
+ @ENABLE_GLIB_TRUE@am_libdbus_c___glib_1_la_rpath = -rpath $(libdir)
+ DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
+ depcomp = $(SHELL) $(top_srcdir)/depcomp
+@@ -97,7 +97,7 @@ LTCXXCOMPILE = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+ CXXLD = $(CXX)
+ CXXLINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+ 	--mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
+-	$(LDFLAGS) -o $@
++	$(LDFLAGS) -lpthread -lexpat -o $@
+ SOURCES = $(libdbus_c___glib_1_la_SOURCES)
+ DIST_SOURCES = $(am__libdbus_c___glib_1_la_SOURCES_DIST)
+ am__libdbus_c___glib_1_HEADERS_DIST =  \
+diff --git a/test/functional/Test1/Makefile.in b/test/functional/Test1/Makefile.in
+index b10331b..60d4955 100644
+--- a/test/functional/Test1/Makefile.in
++++ b/test/functional/Test1/Makefile.in
+@@ -59,7 +59,7 @@ TestApp_DEPENDENCIES = $(top_builddir)/src/libdbus-c++-1.la \
+ 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+ TestApp_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+ 	--mode=link $(CXXLD) $(TestApp_CXXFLAGS) $(CXXFLAGS) \
+-	$(AM_LDFLAGS) $(LDFLAGS) -o $@
++	$(AM_LDFLAGS) $(LDFLAGS) -lpthread -lexpat -o $@
+ DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
+ depcomp = $(SHELL) $(top_srcdir)/depcomp
+ am__depfiles_maybe = depfiles
+@@ -72,7 +72,7 @@ LTCXXCOMPILE = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+ CXXLD = $(CXX)
+ CXXLINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+ 	--mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
+-	$(LDFLAGS) -o $@
++	$(LDFLAGS) -lpthread -lexpat -o $@
+ COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
+ 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+ LTCOMPILE = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+@@ -81,7 +81,7 @@ LTCOMPILE = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+ CCLD = $(CC)
+ LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+ 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
+-	$(LDFLAGS) -o $@
++	$(LDFLAGS) -lpthread -lexpat -o $@
+ SOURCES = $(TestApp_SOURCES)
+ DIST_SOURCES = $(TestApp_SOURCES)
+ HEADERS = $(noinst_HEADERS)
+diff --git a/test/generator/Makefile.in b/test/generator/Makefile.in
+index 6d3ff4f..6618a6e 100644
+--- a/test/generator/Makefile.in
++++ b/test/generator/Makefile.in
+@@ -58,7 +58,7 @@ dbuscxx_test_generator_client_DEPENDENCIES =  \
+ dbuscxx_test_generator_client_LINK = $(LIBTOOL) --tag=CXX \
+ 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
+ 	$(dbuscxx_test_generator_client_CXXFLAGS) $(CXXFLAGS) \
+-	$(AM_LDFLAGS) $(LDFLAGS) -o $@
++	$(AM_LDFLAGS) $(LDFLAGS) -lpthread -lexpat -o $@
+ am_dbuscxx_test_generator_server_OBJECTS = dbuscxx_test_generator_server-dbuscxx_test_generator-server.$(OBJEXT)
+ dbuscxx_test_generator_server_OBJECTS =  \
+ 	$(am_dbuscxx_test_generator_server_OBJECTS)
+@@ -67,7 +67,7 @@ dbuscxx_test_generator_server_DEPENDENCIES =  \
+ dbuscxx_test_generator_server_LINK = $(LIBTOOL) --tag=CXX \
+ 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
+ 	$(dbuscxx_test_generator_server_CXXFLAGS) $(CXXFLAGS) \
+-	$(AM_LDFLAGS) $(LDFLAGS) -o $@
++	$(AM_LDFLAGS) $(LDFLAGS) -lpthread -lexpat -o $@
+ DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
+ depcomp = $(SHELL) $(top_srcdir)/depcomp
+ am__depfiles_maybe = depfiles
+@@ -80,7 +80,7 @@ LTCXXCOMPILE = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+ CXXLD = $(CXX)
+ CXXLINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+ 	--mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
+-	$(LDFLAGS) -o $@
++	$(LDFLAGS) -lpthread -lexpat -o $@
+ COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
+ 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+ LTCOMPILE = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+@@ -89,7 +89,7 @@ LTCOMPILE = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+ CCLD = $(CC)
+ LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+ 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
+-	$(LDFLAGS) -o $@
++	$(LDFLAGS) -lpthread -lexpat -o $@
+ SOURCES = $(dbuscxx_test_generator_client_SOURCES) \
+ 	$(dbuscxx_test_generator_server_SOURCES)
+ DIST_SOURCES = $(dbuscxx_test_generator_client_SOURCES) \
+diff --git a/tools/Makefile.in b/tools/Makefile.in
+index 83843ea..3eb4bb1 100644
+--- a/tools/Makefile.in
++++ b/tools/Makefile.in
+@@ -73,7 +73,7 @@ LTCXXCOMPILE = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+ CXXLD = $(CXX)
+ CXXLINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+ 	--mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
+-	$(LDFLAGS) -o $@
++	$(LDFLAGS) -lpthread -lexpat -o $@
+ COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
+ 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+ LTCOMPILE = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+@@ -82,7 +82,7 @@ LTCOMPILE = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+ CCLD = $(CC)
+ LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+ 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
+-	$(LDFLAGS) -o $@
++	$(LDFLAGS) -lpthread -lexpat -o $@
+ SOURCES = $(dbusxx_introspect_SOURCES) $(dbusxx_xml2cpp_SOURCES)
+ DIST_SOURCES = $(dbusxx_introspect_SOURCES) $(dbusxx_xml2cpp_SOURCES)
+ ETAGS = etags
+-- 
+2.26.0
+
+
+From 6a0cd6b7bb56c02f19bc5774650e9d4b3bc2f7dd Mon Sep 17 00:00:00 2001
+From: Francisco Boni <boboniboni@gmail.com>
+Date: Sun, 19 Apr 2020 03:34:56 -0300
+Subject: [PATCH 2/4] Fix gcc47 patch - maintainer mode - build examples
+
+---
+ tools/Makefile.am | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tools/Makefile.am b/tools/Makefile.am
+index c025cd1..e1f44a1 100644
+--- a/tools/Makefile.am
++++ b/tools/Makefile.am
+@@ -23,7 +23,7 @@ dbusxx_xml2cpp_SOURCES = xml.h xml.cpp xml2cpp.h xml2cpp.cpp \
+ dbusxx_xml2cpp_LDADD = $(xml_LIBS)
+ 
+ dbusxx_introspect_SOURCES = introspect.h introspect.cpp
+-dbusxx_introspect_LDADD = $(libdbus_cxx_la)
++dbusxx_introspect_LDADD = $(libdbus_cxx_la) -lpthread -lexpat
+ 
+ MAINTAINERCLEANFILES = \
+ 	Makefile.in
+-- 
+2.26.0
+
+
+From 2a5c752b8ddcdddaac97e4b16ac8e0fc8c8615ae Mon Sep 17 00:00:00 2001
+From: Francisco Boni <boboniboni@gmail.com>
+Date: Sun, 19 Apr 2020 03:50:02 -0300
+Subject: [PATCH 3/4] Fix gcc47 patch - maintainer mode - build examples
+
+---
+ examples/echo/Makefile.in         | 4 ++--
+ examples/echo_ecore/Makefile.in   | 4 ++--
+ examples/ecore/Makefile.in        | 2 +-
+ examples/glib/Makefile.in         | 2 +-
+ examples/hal/Makefile.in          | 2 +-
+ examples/properties/Makefile.in   | 4 ++--
+ test/functional/Test1/Makefile.in | 2 +-
+ test/generator/Makefile.in        | 4 ++--
+ tools/Makefile.in                 | 4 ++--
+ 9 files changed, 14 insertions(+), 14 deletions(-)
+
+diff --git a/examples/echo/Makefile.in b/examples/echo/Makefile.in
+index 46142eb..e02678c 100644
+--- a/examples/echo/Makefile.in
++++ b/examples/echo/Makefile.in
+@@ -226,9 +226,9 @@ xml_LIBS = @xml_LIBS@
+ EXTRA_DIST = README echo-introspect.xml
+ AM_CPPFLAGS = -I$(top_srcdir)/include 
+ echo_server_SOURCES = echo-server-glue.h echo-server.h echo-server.cpp
+-echo_server_LDADD = $(top_builddir)/src/libdbus-c++-1.la
++echo_server_LDADD = -lpthread -lexpat $(top_builddir)/src/libdbus-c++-1.la
+ echo_client_mt_SOURCES = echo-client-glue.h echo-client.h echo-client.cpp
+-echo_client_mt_LDADD = $(top_builddir)/src/libdbus-c++-1.la $(PTHREAD_LIBS)
++echo_client_mt_LDADD = -lpthread -lexpat $(top_builddir)/src/libdbus-c++-1.la $(PTHREAD_LIBS)
+ echo_client_mt_CXXFLAGS = $(PTHREAD_CFLAGS)
+ BUILT_SOURCES = echo-server-glue.h echo-client-glue.h
+ CLEANFILES = $(BUILT_SOURCES)
+diff --git a/examples/echo_ecore/Makefile.in b/examples/echo_ecore/Makefile.in
+index dc9f0f3..3ec88d0 100644
+--- a/examples/echo_ecore/Makefile.in
++++ b/examples/echo_ecore/Makefile.in
+@@ -233,12 +233,12 @@ AM_CPPFLAGS = -I$(top_srcdir)/include \
+ 	$(ecore_CFLAGS)
+ 
+ echo_server_SOURCES = echo-server-glue.h echo-server.h echo-server.cpp
+-echo_server_LDADD = $(top_builddir)/src/integration/ecore/libdbus-c++-ecore-1.la \
++echo_server_LDADD = -lpthread -lexpat $(top_builddir)/src/integration/ecore/libdbus-c++-ecore-1.la \
+ 	$(top_builddir)/src/libdbus-c++-1.la \
+ 	$(ecore_LIBS)
+ 
+ echo_client_mt_SOURCES = echo-client-glue.h echo-client.h echo-client.cpp
+-echo_client_mt_LDADD = $(top_builddir)/src/integration/ecore/libdbus-c++-ecore-1.la \
++echo_client_mt_LDADD = -lpthread -lexpat $(top_builddir)/src/integration/ecore/libdbus-c++-ecore-1.la \
+ 	$(top_builddir)/src/libdbus-c++-1.la $(PTHREAD_LIBS) \
+ 	$(ecore_LIBS)
+ 
+diff --git a/examples/ecore/Makefile.in b/examples/ecore/Makefile.in
+index eb768ad..f249b4a 100644
+--- a/examples/ecore/Makefile.in
++++ b/examples/ecore/Makefile.in
+@@ -221,7 +221,7 @@ xml_LIBS = @xml_LIBS@
+ EXTRA_DIST = 
+ AM_CPPFLAGS = $(ecore_CFLAGS) $(xml_CFLAGS) -I$(top_srcdir)/include
+ dbus_ecore_SOURCES = dbus_ecore-glue.h dbus_ecore.h dbus_ecore.cpp 
+-dbus_ecore_LDADD = $(top_builddir)/src/integration/ecore/libdbus-c++-ecore-1.la \
++dbus_ecore_LDADD = -lpthread -lexpat $(top_builddir)/src/integration/ecore/libdbus-c++-ecore-1.la \
+ 	$(top_builddir)/src/libdbus-c++-1.la $(ecore_LIBS) $(xml_LIBS)
+ 
+ BUILT_SOURCES = dbus_ecore-glue.h
+diff --git a/examples/glib/Makefile.in b/examples/glib/Makefile.in
+index 6499dcb..6c435b7 100644
+--- a/examples/glib/Makefile.in
++++ b/examples/glib/Makefile.in
+@@ -220,7 +220,7 @@ xml_LIBS = @xml_LIBS@
+ EXTRA_DIST = 
+ AM_CPPFLAGS = -I$(top_srcdir)/include $(gtkmm_CFLAGS) -I$(top_srcdir)/tools
+ dbus_browser_SOURCES = dbus-glue.h dbus-browser.h dbus-browser.cpp $(top_srcdir)/tools/xml.cpp
+-dbus_browser_LDADD = $(top_builddir)/src/integration/glib/libdbus-c++-glib-1.la \
++dbus_browser_LDADD = -lpthread -lexpat $(top_builddir)/src/integration/glib/libdbus-c++-glib-1.la \
+ 	$(top_builddir)/src/libdbus-c++-1.la $(gtkmm_LIBS)
+ 
+ BUILT_SOURCES = dbus-glue.h
+diff --git a/examples/hal/Makefile.in b/examples/hal/Makefile.in
+index 9e97f5b..4b77a35 100644
+--- a/examples/hal/Makefile.in
++++ b/examples/hal/Makefile.in
+@@ -216,7 +216,7 @@ xml_CFLAGS = @xml_CFLAGS@
+ xml_LIBS = @xml_LIBS@
+ AM_CPPFLAGS = -I$(top_srcdir)/include 
+ hal_listen_SOURCES = hal-listen.h hal-listen.cpp
+-hal_listen_LDADD = $(top_builddir)/src/libdbus-c++-1.la
++hal_listen_LDADD = -lpthread -lexpat $(top_builddir)/src/libdbus-c++-1.la
+ MAINTAINERCLEANFILES = \
+ 	Makefile.in
+ 
+diff --git a/examples/properties/Makefile.in b/examples/properties/Makefile.in
+index 30d477b..7249043 100644
+--- a/examples/properties/Makefile.in
++++ b/examples/properties/Makefile.in
+@@ -220,9 +220,9 @@ xml_LIBS = @xml_LIBS@
+ EXTRA_DIST = propsgs-introspect.xml
+ AM_CPPFLAGS = -I$(top_srcdir)/include 
+ propsgs_server_SOURCES = propsgs-glue-adaptor.h propsgs-server.h propsgs-server.cpp
+-propsgs_server_LDADD = $(top_builddir)/src/libdbus-c++-1.la
++propsgs_server_LDADD = -lpthread -lexpat $(top_builddir)/src/libdbus-c++-1.la
+ propsgs_client_SOURCES = propsgs-glue-proxy.h propsgs-client.h propsgs-client.cpp
+-propsgs_client_LDADD = $(top_builddir)/src/libdbus-c++-1.la -lpthread
++propsgs_client_LDADD = -lpthread -lexpat $(top_builddir)/src/libdbus-c++-1.la -lpthread
+ BUILT_SOURCES = propsgs-glue-adaptor.h propsgs-glue-proxy.h
+ CLEANFILES = $(BUILT_SOURCES)
+ MAINTAINERCLEANFILES = \
+diff --git a/test/functional/Test1/Makefile.in b/test/functional/Test1/Makefile.in
+index 60d4955..896d37c 100644
+--- a/test/functional/Test1/Makefile.in
++++ b/test/functional/Test1/Makefile.in
+@@ -240,7 +240,7 @@ TestApp_SOURCES = \
+ 	TestAppIntro.h \
+ 	TestAppIntroProvider.h
+ 
+-TestApp_LDADD = \
++TestApp_LDADD = -lpthread -lexpat \
+ 	$(top_builddir)/src/libdbus-c++-1.la \
+ 	$(PTHREAD_LIBS) \
+ 	$(RT_LIBS)
+diff --git a/test/generator/Makefile.in b/test/generator/Makefile.in
+index 6618a6e..69ed853 100644
+--- a/test/generator/Makefile.in
++++ b/test/generator/Makefile.in
+@@ -238,13 +238,13 @@ dbuscxx_test_generator_server_SOURCES = dbuscxx_test_generator-server-glue.h \
+ 					dbuscxx_test_generator-server.h \
+ 					dbuscxx_test_generator-server.cpp
+ 
+-dbuscxx_test_generator_server_LDADD = $(top_builddir)/src/libdbus-c++-1.la 
++dbuscxx_test_generator_server_LDADD = -lpthread -lexpat $(top_builddir)/src/libdbus-c++-1.la 
+ dbuscxx_test_generator_server_CXXFLAGS = 
+ dbuscxx_test_generator_client_SOURCES = dbuscxx_test_generator-client-glue.h \
+ 					dbuscxx_test_generator-client.h \
+ 					dbuscxx_test_generator-client.cpp
+ 
+-dbuscxx_test_generator_client_LDADD = $(top_builddir)/src/libdbus-c++-1.la 
++dbuscxx_test_generator_client_LDADD = -lpthread -lexpat $(top_builddir)/src/libdbus-c++-1.la 
+ dbuscxx_test_generator_client_CXXFLAGS = 
+ BUILT_SOURCES = dbuscxx_test_generator-server-glue.h \
+ 		dbuscxx_test_generator-client-glue.h
+diff --git a/tools/Makefile.in b/tools/Makefile.in
+index 3eb4bb1..746bf76 100644
+--- a/tools/Makefile.in
++++ b/tools/Makefile.in
+@@ -236,9 +236,9 @@ dbusxx_xml2cpp_SOURCES = xml.h xml.cpp xml2cpp.h xml2cpp.cpp \
+ 	generate_adaptor.cpp  generate_adaptor.h  generate_proxy.cpp\
+ 	generate_proxy.h  generator_utils.cpp  generator_utils.h
+ 
+-dbusxx_xml2cpp_LDADD = $(xml_LIBS)
++dbusxx_xml2cpp_LDADD = -lpthread -lexpat $(xml_LIBS)
+ dbusxx_introspect_SOURCES = introspect.h introspect.cpp
+-dbusxx_introspect_LDADD = $(libdbus_cxx_la)
++dbusxx_introspect_LDADD = -lpthread -lexpat $(libdbus_cxx_la)
+ MAINTAINERCLEANFILES = \
+ 	Makefile.in
+ 
+-- 
+2.26.0
+
+
+From 9579a3dd087361a7ae0e00c4c6c71f56eed1a0d8 Mon Sep 17 00:00:00 2001
+From: Francisco Boni <boboniboni@gmail.com>
+Date: Sun, 19 Apr 2020 03:54:03 -0300
+Subject: [PATCH 4/4] Fix gcc47 patch - maintainer mode - build examples
+
+---
+ examples/echo/Makefile.am         | 4 ++--
+ examples/echo_ecore/Makefile.am   | 4 ++--
+ examples/ecore/Makefile.am        | 2 +-
+ examples/glib/Makefile.am         | 2 +-
+ examples/hal/Makefile.am          | 2 +-
+ examples/properties/Makefile.am   | 4 ++--
+ test/functional/Test1/Makefile.am | 2 +-
+ test/generator/Makefile.am        | 4 ++--
+ tools/Makefile.am                 | 4 ++--
+ 9 files changed, 14 insertions(+), 14 deletions(-)
+
+diff --git a/examples/echo/Makefile.am b/examples/echo/Makefile.am
+index 35d7b57..d646c70 100644
+--- a/examples/echo/Makefile.am
++++ b/examples/echo/Makefile.am
+@@ -5,7 +5,7 @@ AM_CPPFLAGS = -I$(top_srcdir)/include
+ noinst_PROGRAMS = echo-server
+ 
+ echo_server_SOURCES = echo-server-glue.h echo-server.h echo-server.cpp
+-echo_server_LDADD = $(top_builddir)/src/libdbus-c++-1.la
++echo_server_LDADD = -lpthread -lexpat $(top_builddir)/src/libdbus-c++-1.la
+ 
+ echo-server-glue.h: echo-introspect.xml
+ 	$(top_builddir)/tools/dbusxx-xml2cpp $^ --adaptor=$@
+@@ -13,7 +13,7 @@ echo-server-glue.h: echo-introspect.xml
+ noinst_PROGRAMS += echo-client-mt
+ 
+ echo_client_mt_SOURCES = echo-client-glue.h echo-client.h echo-client.cpp
+-echo_client_mt_LDADD = $(top_builddir)/src/libdbus-c++-1.la $(PTHREAD_LIBS)
++echo_client_mt_LDADD = -lpthread -lexpat $(top_builddir)/src/libdbus-c++-1.la $(PTHREAD_LIBS)
+ echo_client_mt_CXXFLAGS = $(PTHREAD_CFLAGS)
+ 
+ echo-client-glue.h: echo-introspect.xml
+diff --git a/examples/echo_ecore/Makefile.am b/examples/echo_ecore/Makefile.am
+index 343547f..3d3cead 100644
+--- a/examples/echo_ecore/Makefile.am
++++ b/examples/echo_ecore/Makefile.am
+@@ -8,7 +8,7 @@ noinst_PROGRAMS = echo-server
+ endif
+ 
+ echo_server_SOURCES = echo-server-glue.h echo-server.h echo-server.cpp
+-echo_server_LDADD = $(top_builddir)/src/integration/ecore/libdbus-c++-ecore-1.la \
++echo_server_LDADD = -lpthread -lexpat $(top_builddir)/src/integration/ecore/libdbus-c++-ecore-1.la \
+ 	$(top_builddir)/src/libdbus-c++-1.la \
+ 	$(ecore_LIBS)
+ 
+@@ -20,7 +20,7 @@ noinst_PROGRAMS += echo-client-mt
+ endif
+ 
+ echo_client_mt_SOURCES = echo-client-glue.h echo-client.h echo-client.cpp
+-echo_client_mt_LDADD = $(top_builddir)/src/integration/ecore/libdbus-c++-ecore-1.la \
++echo_client_mt_LDADD = -lpthread -lexpat $(top_builddir)/src/integration/ecore/libdbus-c++-ecore-1.la \
+ 	$(top_builddir)/src/libdbus-c++-1.la $(PTHREAD_LIBS) \
+ 	$(ecore_LIBS)
+ echo_client_mt_CXXFLAGS = $(PTHREAD_CFLAGS)
+diff --git a/examples/ecore/Makefile.am b/examples/ecore/Makefile.am
+index ace915c..079139b 100644
+--- a/examples/ecore/Makefile.am
++++ b/examples/ecore/Makefile.am
+@@ -7,7 +7,7 @@ noinst_PROGRAMS = dbus_ecore
+ endif
+ 
+ dbus_ecore_SOURCES = dbus_ecore-glue.h dbus_ecore.h dbus_ecore.cpp 
+-dbus_ecore_LDADD = $(top_builddir)/src/integration/ecore/libdbus-c++-ecore-1.la \
++dbus_ecore_LDADD = -lpthread -lexpat $(top_builddir)/src/integration/ecore/libdbus-c++-ecore-1.la \
+ 	$(top_builddir)/src/libdbus-c++-1.la $(ecore_LIBS) $(xml_LIBS)
+ 
+ dbus_ecore-glue.h: $(top_srcdir)/data/org.freedesktop.DBus.xml
+diff --git a/examples/glib/Makefile.am b/examples/glib/Makefile.am
+index 8904690..f2e6671 100644
+--- a/examples/glib/Makefile.am
++++ b/examples/glib/Makefile.am
+@@ -7,7 +7,7 @@ noinst_PROGRAMS = dbus-browser
+ endif
+ 
+ dbus_browser_SOURCES = dbus-glue.h dbus-browser.h dbus-browser.cpp $(top_srcdir)/tools/xml.cpp
+-dbus_browser_LDADD = $(top_builddir)/src/integration/glib/libdbus-c++-glib-1.la \
++dbus_browser_LDADD = -lpthread -lexpat $(top_builddir)/src/integration/glib/libdbus-c++-glib-1.la \
+ 	$(top_builddir)/src/libdbus-c++-1.la $(gtkmm_LIBS)
+ 
+ dbus-glue.h: $(top_srcdir)/data/org.freedesktop.DBus.xml
+diff --git a/examples/hal/Makefile.am b/examples/hal/Makefile.am
+index 7a4b649..cad2e48 100644
+--- a/examples/hal/Makefile.am
++++ b/examples/hal/Makefile.am
+@@ -3,7 +3,7 @@ AM_CPPFLAGS = -I$(top_srcdir)/include
+ noinst_PROGRAMS = hal-listen
+ 
+ hal_listen_SOURCES = hal-listen.h hal-listen.cpp
+-hal_listen_LDADD = $(top_builddir)/src/libdbus-c++-1.la
++hal_listen_LDADD = -lpthread -lexpat $(top_builddir)/src/libdbus-c++-1.la
+ 
+ MAINTAINERCLEANFILES = \
+ 	Makefile.in
+diff --git a/examples/properties/Makefile.am b/examples/properties/Makefile.am
+index a60fd63..97e3b22 100644
+--- a/examples/properties/Makefile.am
++++ b/examples/properties/Makefile.am
+@@ -5,10 +5,10 @@ AM_CPPFLAGS = -I$(top_srcdir)/include
+ noinst_PROGRAMS = propsgs-server propsgs-client
+ 
+ propsgs_server_SOURCES = propsgs-glue-adaptor.h propsgs-server.h propsgs-server.cpp
+-propsgs_server_LDADD = $(top_builddir)/src/libdbus-c++-1.la
++propsgs_server_LDADD = -lpthread -lexpat $(top_builddir)/src/libdbus-c++-1.la
+ 
+ propsgs_client_SOURCES = propsgs-glue-proxy.h propsgs-client.h propsgs-client.cpp
+-propsgs_client_LDADD = $(top_builddir)/src/libdbus-c++-1.la -lpthread
++propsgs_client_LDADD = -lpthread -lexpat $(top_builddir)/src/libdbus-c++-1.la -lpthread
+ 
+ propsgs-glue-adaptor.h: propsgs-introspect.xml
+ 	$(top_builddir)/tools/dbusxx-xml2cpp $^ --adaptor=$@ --
+diff --git a/test/functional/Test1/Makefile.am b/test/functional/Test1/Makefile.am
+index 3269751..fda8115 100644
+--- a/test/functional/Test1/Makefile.am
++++ b/test/functional/Test1/Makefile.am
+@@ -28,7 +28,7 @@ TestApp_SOURCES = \
+ 	TestAppIntro.h \
+ 	TestAppIntroProvider.h
+ 
+-TestApp_LDADD = \
++TestApp_LDADD = -lpthread -lexpat \
+ 	$(top_builddir)/src/libdbus-c++-1.la \
+ 	$(PTHREAD_LIBS) \
+ 	$(RT_LIBS)
+diff --git a/test/generator/Makefile.am b/test/generator/Makefile.am
+index 6c2403d..11b75c8 100644
+--- a/test/generator/Makefile.am
++++ b/test/generator/Makefile.am
+@@ -8,7 +8,7 @@ dbuscxx_test_generator_server_SOURCES = dbuscxx_test_generator-server-glue.h \
+ 					dbuscxx_test_generator-server.h \
+ 					dbuscxx_test_generator-server.cpp
+ 
+-dbuscxx_test_generator_server_LDADD = $(top_builddir)/src/libdbus-c++-1.la 
++dbuscxx_test_generator_server_LDADD = -lpthread -lexpat $(top_builddir)/src/libdbus-c++-1.la 
+ dbuscxx_test_generator_server_CXXFLAGS = 
+ 
+ dbuscxx_test_generator-server-glue.h: dbuscxx_test_generator.xml
+@@ -22,7 +22,7 @@ dbuscxx_test_generator_client_SOURCES = dbuscxx_test_generator-client-glue.h \
+ 					dbuscxx_test_generator-client.h \
+ 					dbuscxx_test_generator-client.cpp
+ 
+-dbuscxx_test_generator_client_LDADD = $(top_builddir)/src/libdbus-c++-1.la 
++dbuscxx_test_generator_client_LDADD = -lpthread -lexpat $(top_builddir)/src/libdbus-c++-1.la 
+ dbuscxx_test_generator_client_CXXFLAGS = 
+ 
+ dbuscxx_test_generator-client-glue.h: dbuscxx_test_generator.xml
+diff --git a/tools/Makefile.am b/tools/Makefile.am
+index e1f44a1..eddd955 100644
+--- a/tools/Makefile.am
++++ b/tools/Makefile.am
+@@ -20,10 +20,10 @@ bin_PROGRAMS = dbusxx-xml2cpp dbusxx-introspect
+ dbusxx_xml2cpp_SOURCES = xml.h xml.cpp xml2cpp.h xml2cpp.cpp \
+ 	generate_adaptor.cpp  generate_adaptor.h  generate_proxy.cpp\
+ 	generate_proxy.h  generator_utils.cpp  generator_utils.h
+-dbusxx_xml2cpp_LDADD = $(xml_LIBS)
++dbusxx_xml2cpp_LDADD = -lpthread -lexpat $(xml_LIBS)
+ 
+ dbusxx_introspect_SOURCES = introspect.h introspect.cpp
+-dbusxx_introspect_LDADD = $(libdbus_cxx_la) -lpthread -lexpat
++dbusxx_introspect_LDADD = -lpthread -lexpat $(libdbus_cxx_la) -lpthread -lexpat
+ 
+ MAINTAINERCLEANFILES = \
+ 	Makefile.in
+-- 
+2.26.0
+
